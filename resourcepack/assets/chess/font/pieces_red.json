@@ -1,0 +1,58 @@
+{
+    "providers": [
+        {
+            "type": "bitmap",
+            "file": "chess:font/pawn_r.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": [
+                "p"
+            ]
+        },
+        {
+            "type": "bitmap",
+            "file": "chess:font/rook_r.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": [
+                "r"
+            ]
+        },
+        {
+            "type": "bitmap",
+            "file": "chess:font/knight_r.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": [
+                "n"
+            ]
+        },
+        {
+            "type": "bitmap",
+            "file": "chess:font/bishop_r.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": [
+                "b"
+            ]
+        },
+        {
+            "type": "bitmap",
+            "file": "chess:font/queen_r.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": [
+                "q"
+            ]
+        },
+        {
+            "type": "bitmap",
+            "file": "chess:font/king_r.png",
+            "ascent": 11,
+            "height": 16,
+            "chars": [
+                "k"
+            ]
+        }
+    ]
+}
