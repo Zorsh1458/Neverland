@@ -2,7 +2,7 @@ name: server-build
 run-name: Building server
 on: [push, workflow_dispatch]
 jobs:
-  build-game:
+  build-all:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -25,8 +25,20 @@ jobs:
         with:
           name: server-game
           path: build/libs/server-game.jar
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: server-lobby
+          path: build/libs/server-lobby.jar
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: server-launcher
+          path: build/libs/server-launcher.jar
   deploy-game:
-    needs: [build-game]
+    needs: [build-all]
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -34,7 +46,7 @@ jobs:
         with:
           name: server-game
           path: downloaded_artifact_plugin/
-      
+
       - name: Deploy to test server
         uses: sand4rt/ftp-deployer@v1.10
         with:
@@ -43,10 +55,55 @@ jobs:
           port: ${{ secrets.SFTP_PORT }}
           username: ${{ secrets.SFTP_USER }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          remote_folder: plugins
           local_folder: downloaded_artifact_plugin
           cleanup: false
           include: '["server-game.jar"]'
+          exclude: '[]'
+          passive: true
+  deploy-lobby:
+    needs: [build-all]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: server-lobby
+          path: downloaded_artifact_plugin/
+
+      - name: Deploy to test server
+        uses: sand4rt/ftp-deployer@v1.10
+        with:
+          sftp: true
+          host: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_folder: downloaded_artifact_plugin
+          cleanup: false
+          include: '["server-lobby.jar"]'
+          exclude: '[]'
+          passive: true
+  deploy-launcher:
+    needs: [build-all]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: server-launcher
+          path: downloaded_artifact_plugin/
+
+      - name: Deploy to test server
+        uses: sand4rt/ftp-deployer@v1.10
+        with:
+          sftp: true
+          host: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_folder: downloaded_artifact_plugin
+          cleanup: false
+          include: '["server-launcher.jar"]'
           exclude: '[]'
           passive: true
   notify-game:
@@ -58,7 +115,27 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe
         with:
-          args: ':beginner: Project (GAME) loaded: ${{ github.event.head_commit.message }}'
+          args: ':fleur_de_lis: Project (GAME) loaded: ${{ github.event.head_commit.message }}'
+  notify-lobby:
+    needs: [deploy-lobby]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification raw
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe
+        with:
+          args: ':hourglass: Project (LOBBY) loaded: ${{ github.event.head_commit.message }}'
+  notify-launcher:
+    needs: [deploy-launcher]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord notification raw
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe
+        with:
+          args: ':beginner: Project (ZAPYSKATEL :skull:) loaded: ${{ github.event.head_commit.message }}'
   pre-notify:
     runs-on: ubuntu-latest
     steps:

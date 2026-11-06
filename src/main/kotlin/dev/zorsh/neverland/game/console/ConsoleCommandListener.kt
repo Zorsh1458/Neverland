@@ -1,11 +1,8 @@
 package dev.zorsh.neverland.game.console
 
+import dev.zorsh.neverland.game.Neverland
 import net.minestom.server.MinecraftServer
 import net.minestom.server.network.packet.server.common.TransferPacket
-import kotlin.io.path.Path
-import kotlin.io.path.readLines
-import kotlin.text.substringAfter
-import kotlin.text.substringBefore
 
 class ConsoleCommandListener {
     companion object {
@@ -26,10 +23,8 @@ class ConsoleCommandListener {
                     if (command == "restart" || command == "stop") {
                         onStop?.invoke()
 
-                        val config = Path("neverland.properties").readLines()
-                            .associate { it.substringBefore('=').trim() to it.substringAfter('=').trim() }
-                        val lobbyPort = config["lobby-port"]?.toIntOrNull() ?: continue
-                        val serverIp = config["server-ip"] ?: continue
+                        val lobbyPort = Neverland.config["lobby-port"]?.toIntOrNull() ?: continue
+                        val serverIp = Neverland.config["server-ip"] ?: continue
 
                         MinecraftServer.getInstanceManager().instances.forEach {
                             it.players.forEach { player ->

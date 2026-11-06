@@ -9,8 +9,8 @@ import dev.zorsh.neverland.game.command.GameModeCommand
 import dev.zorsh.neverland.game.console.ConsoleCommandListener
 import dev.zorsh.neverland.game.logger.Logger
 import dev.zorsh.neverland.game.util.TPSBar
+import dev.zorsh.neverland.game.webserver.ResourcepackServer
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.coordinate.Pos
@@ -28,6 +28,9 @@ import kotlin.io.path.readLines
 
 
 fun main() {
+    Neverland.config = Path("neverland.properties").readLines()
+        .associate { it.substringBefore('=').trim() to it.substringAfter('=').trim() }
+
     val server = MinecraftServer.init()
 
     NeverlandBiomeManager.registerBiomes()
@@ -37,7 +40,7 @@ fun main() {
     val lobbyDimension = MinecraftServer.getDimensionTypeRegistry()
         .register(
             "neverland:main", DimensionType.builder()
-                .ambientLight(0.0f)
+                .ambientLight(1.0f)
                 .hasSkylight(false)
                 .build()
         )
@@ -97,15 +100,19 @@ fun main() {
 
     MinecraftServer.setBrandName("NEVERLAND (GAME)")
 
-    val config = Path("neverland.properties").readLines()
-        .associate { it.substringBefore('=').trim() to it.substringAfter('=').trim() }
-
-    server.start("0.0.0.0", config["game-port"]?.toIntOrNull() ?: 25565)
+    server.start("0.0.0.0", Neverland.config["game-port"]?.toIntOrNull() ?: 25565)
 
     BattleManager.enable()
 
     ConsoleCommandListener.onStop {
         BattleManager.disable()
+    }
+
+    val webServer = ResourcepackServer.start()
+    if (webServer != null) {
+        Runtime.getRuntime().addShutdownHook(Thread {
+            webServer.stop()
+        })
     }
 
     ConsoleCommandListener.start()

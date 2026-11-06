@@ -16,6 +16,8 @@ dependencies {
     implementation("net.minestom:minestom:2025.07.14-1.21.7")
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("io.ktor:ktor-server-core:2.3.12")
+    implementation("io.ktor:ktor-server-netty:2.3.12")
 }
 
 kotlin {
