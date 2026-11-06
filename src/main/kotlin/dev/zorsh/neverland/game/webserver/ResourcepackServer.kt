@@ -28,6 +28,7 @@ class ResourcepackServer {
             return embeddedServer(Netty, port = port) {
                 routing {
                     get("{...}") {
+                        Logger.info("Got request to web server")
                         if (resourcepackFile.exists()) {
                             call.respondFile(resourcepackFile)
                         } else {
@@ -35,7 +36,7 @@ class ResourcepackServer {
                         }
                     }
                 }
-            }.start(wait = true)
+            }.start(wait = false)
         }
     }
 }
