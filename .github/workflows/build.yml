@@ -1,5 +1,5 @@
-name: plugin-build
-run-name: Building plugin
+name: server-build
+run-name: Building server
 on: [push, workflow_dispatch]
 jobs:
   build-game:
